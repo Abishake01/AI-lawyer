@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-navy-50: 240, 249, 255;
+    --color-navy-100: 224, 242, 254;
+    --color-navy-200: 186, 230, 253;
+    --color-navy-300: 125, 211, 252;
+    --color-navy-400: 56, 189, 248;
+    --color-navy-500: 14, 165, 233;
+    --color-navy-600: 2, 132, 199;
+    --color-navy-700: 3, 105, 161;
+    --color-navy-800: 7, 89, 133;
+    --color-navy-900: 12, 74, 110;
+    --color-navy-950: 8, 47, 73;
+    
+    --color-gold-50: 255, 251, 235;
+    --color-gold-100: 254, 243, 199;
+    --color-gold-200: 253, 230, 138;
+    --color-gold-300: 252, 211, 77;
+    --color-gold-400: 251, 191, 36;
+    --color-gold-500: 245, 158, 11;
+    --color-gold-600: 217, 119, 6;
+    --color-gold-700: 180, 83, 9;
+    --color-gold-800: 146, 64, 14;
+    --color-gold-900: 120, 53, 15;
+    --color-gold-950: 69, 26, 3;
+    
+    --color-crimson-50: 254, 242, 242;
+    --color-crimson-100: 254, 226, 226;
+    --color-crimson-200: 254, 202, 202;
+    --color-crimson-300: 252, 165, 165;
+    --color-crimson-400: 248, 113, 113;
+    --color-crimson-500: 239, 68, 68;
+    --color-crimson-600: 220, 38, 38;
+    --color-crimson-700: 185, 28, 28;
+    --color-crimson-800: 153, 27, 27;
+    --color-crimson-900: 127, 29, 29;
+    --color-crimson-950: 69, 10, 10;
+  }
+  
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+    scroll-behavior: smooth;
+  }
+  
+  .font-serif {
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+}
+
+/* Animation for chat message typing */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.delay-75 {
+  animation-delay: 0.2s;
+}
+
+.delay-150 {
+  animation-delay: 0.4s;
+}
