@@ -165,11 +165,12 @@ const ChatInterface = () => {
 };
 
 const commonQuestions = [
-  "What are my rights during a traffic stop?",
-  "Can police search my car without my consent?",
-  "Do I have to answer police questions?",
-  "What should I do if I'm being arrested?",
-  "Can I record police officers during an interaction?"
-];
+  "Can I drive a bike under 18?",
+  "Is it legal to record police officers in India?",
+  "What are my rights if I get arrested in India?",
+  "Can I get bail for a bailable offence?",
+  "Is a driving license required for electric scooters?",
+  "What are the rights of tenants in India?"
+]
 
 export default ChatInterface;

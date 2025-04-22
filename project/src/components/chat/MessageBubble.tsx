@@ -62,7 +62,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           <div className="flex-1">
             <div className="whitespace-pre-wrap">
               {isTyping ? (
-                <TypewriterText text={text} />
+                <TypewriterText key={text} text={text} />
+
               ) : (
                 text
               )}

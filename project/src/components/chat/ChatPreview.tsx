@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User, Bot } from 'lucide-react';
 
 const ChatPreview = () => {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
-  
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
   const conversation = [
     {
       type: 'user',
@@ -28,56 +29,72 @@ const ChatPreview = () => {
   const currentMessage = conversation[currentMessageIndex];
 
   useEffect(() => {
+    let typingInterval: NodeJS.Timeout;
+    let transitionTimer: NodeJS.Timeout;
+
     if (currentMessage.type === 'ai') {
       setIsTyping(true);
       setDisplayedText('');
-      
       const text = currentMessage.message;
       let i = 0;
-      
-      const typingInterval = setInterval(() => {
+
+      typingInterval = setInterval(() => {
         if (i < text.length) {
           setDisplayedText(prev => prev + text.charAt(i));
           i++;
         } else {
           clearInterval(typingInterval);
           setIsTyping(false);
-          
-          // Move to next message after a delay
-          const timer = setTimeout(() => {
-            setCurrentMessageIndex(prevIndex => 
-              (prevIndex + 1) % conversation.length
-            );
-          }, 3000);
-          
-          return () => clearTimeout(timer);
         }
       }, 30);
-      
-      return () => clearInterval(typingInterval);
+
+      transitionTimer = setTimeout(() => {
+        setCurrentMessageIndex(prevIndex =>
+          (prevIndex + 1) % conversation.length
+        );
+      }, text.length * 30 + 1000); // Dynamic delay
+
+    } else {
+      transitionTimer = setTimeout(() => {
+        setCurrentMessageIndex(prevIndex =>
+          (prevIndex + 1) % conversation.length
+        );
+      }, 2000); // Shorter delay for user messages
     }
-  }, [currentMessageIndex, currentMessage.type, currentMessage.message]);
+
+    return () => {
+      clearInterval(typingInterval);
+      clearTimeout(transitionTimer);
+    };
+  }, [currentMessageIndex]);
+
+  useEffect(() => {
+    chatContainerRef.current?.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [displayedText, currentMessageIndex]);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 max-w-md mx-auto">
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 max-w-md w-full mx-auto">
       <div className="bg-navy-800 text-black p-4">
         <h3 className="font-medium flex items-center">
           <Bot className="mr-2 h-5 w-5" />
           AI Lawyer Assistant
         </h3>
       </div>
-      
-      <div className="h-80 overflow-y-auto p-4 bg-slate-50">
+
+      <div className="h-80 overflow-y-auto p-4 bg-slate-50" ref={chatContainerRef}>
         {conversation.slice(0, currentMessageIndex + 1).map((msg, idx) => (
-          <div 
-            key={idx} 
+          <div
+            key={idx}
             className={`mb-4 flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div 
+            <div
               className={`
                 max-w-[80%] rounded-lg p-3 
-                ${msg.type === 'user' 
-                  ? 'bg-navy-700 text-black' 
+                ${msg.type === 'user'
+                  ? 'bg-navy-700 text-black'
                   : 'bg-white border border-slate-200 text-slate-800'
                 }
               `}
@@ -87,12 +104,16 @@ const ChatPreview = () => {
                   <Bot className="h-5 w-5 mr-2 mt-0.5 text-gold-600 flex-shrink-0" />
                 )}
                 <div>
-                  {idx === currentMessageIndex && msg.type === 'ai' 
-                    ? displayedText 
+                  {idx === currentMessageIndex && msg.type === 'ai'
+                    ? displayedText
                     : msg.message
                   }
                   {idx === currentMessageIndex && msg.type === 'ai' && isTyping && (
-                    <span className="inline-block w-2 h-4 bg-gold-600 ml-1 animate-pulse"></span>
+                    <span className="inline-block ml-1">
+                      <span className="inline-block w-1 h-4 bg-gold-600 animate-bounce mr-0.5" />
+                      <span className="inline-block w-1 h-4 bg-gold-600 animate-bounce delay-100 mr-0.5" />
+                      <span className="inline-block w-1 h-4 bg-gold-600 animate-bounce delay-200" />
+                    </span>
                   )}
                 </div>
                 {msg.type === 'user' && (
@@ -103,7 +124,7 @@ const ChatPreview = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="p-4 border-t border-slate-200 bg-white">
         <div className="flex items-center">
           <input
@@ -112,7 +133,7 @@ const ChatPreview = () => {
             className="flex-grow p-2 border border-slate-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-navy-500"
             disabled
           />
-          <button 
+          <button
             className="bg-navy-700 text-black p-2 rounded-r-md"
             disabled
           >

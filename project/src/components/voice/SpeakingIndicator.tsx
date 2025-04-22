@@ -26,7 +26,12 @@ const SpeakingIndicator: React.FC<SpeakingIndicatorProps> = ({
   };
 
   return (
-    <div className={`flex items-center ${color}`}>
+    <div 
+  className={`flex items-center ${color}`} 
+  aria-live="polite" 
+  title={isSpeaking ? 'Speaking...' : 'Silent'}
+>
+
       {showIcon && (
         <motion.div
           animate={isSpeaking ? { opacity: [0.5, 1, 0.5] } : { opacity: 1 }}
@@ -41,7 +46,11 @@ const SpeakingIndicator: React.FC<SpeakingIndicatorProps> = ({
         </motion.div>
       )}
       
-      {isSpeaking && <SpeechWaveform isActive={true} size={size} />}
+      {isSpeaking ? (
+  <SpeechWaveform isActive={true} size={size} />
+) : (
+  <span className="text-xs text-slate-400 ml-1">Idle</span>
+)}
     </div>
   );
 };
