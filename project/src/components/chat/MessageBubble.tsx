@@ -1,127 +1,119 @@
 import React from 'react';
-import { Bot, User } from 'lucide-react';
-import { motion } from 'framer-motion';
-import SpeakingIndicator from '../voice/SpeakingIndicator';
+import { User, Bot } from 'lucide-react';
 
 interface MessageBubbleProps {
   sender: 'user' | 'ai';
   text: string;
-  isSpeaking?: boolean;
   isTyping?: boolean;
-  showAvatar?: boolean;
-  animateEntrance?: boolean;
+  isSpeaking?: boolean;
+  timestamp?: Date | string | null; // Updated to accept multiple types
+  isError?: boolean;
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({
   sender,
   text,
-  isSpeaking = false,
   isTyping = false,
-  showAvatar = true,
-  animateEntrance = true
+  isSpeaking = false,
+  timestamp,
+  isError = false
 }) => {
-  const variants = {
-    hidden: { 
-      opacity: 0,
-      y: 20,
-      scale: 0.95
-    },
-    visible: { 
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { 
-        duration: 0.3,
-        ease: "easeOut"
-      }
+  // Format legal references (e.g., "IPC Section 302")
+  const formatLegalText = (content: string) => {
+    return content
+      .split('\n')
+      .map((paragraph, i) => {
+        if (paragraph.trim() === '') return <br key={i} />;
+        
+        // Highlight legal codes
+        const withLegalCodes = paragraph.replace(
+          /(IPC|CrPC|CPA|IT Act|Constitution|Section)\s?\d+[A-Za-z]*/g,
+          '<span class="text-gold-600 font-medium">$&</span>'
+        );
+        
+        // Highlight important notes
+        const withNotes = withLegalCodes.replace(
+          /Note:|Important:|Warning:/g,
+          '<span class="text-red-500 font-medium">$&</span>'
+        );
+        
+        return (
+          <p 
+            key={i}
+            className="mb-2"
+            dangerouslySetInnerHTML={{ __html: withNotes }}
+          />
+        );
+      });
+  };
+
+  // Safely format timestamp
+  const formatTimestamp = (ts: Date | string | null | undefined) => {
+    if (!ts) return null;
+    
+    try {
+      const date = typeof ts === 'string' ? new Date(ts) : ts;
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      console.error('Error formatting timestamp:', e);
+      return null;
     }
   };
 
+  const formattedTime = formatTimestamp(timestamp);
+
   return (
-    <motion.div 
-      className={`flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`}
-      initial={animateEntrance ? "hidden" : "visible"}
-      animate="visible"
-      variants={variants}
-    >
-      <div 
+    <div className={`flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+      <div
         className={`
-          max-w-[80%] rounded-lg p-4 
-          ${sender === 'user' 
-            ? 'bg-navy-700 text-black' 
-            : 'bg-white border border-slate-200 text-slate-800'
+          max-w-[85%] rounded-lg p-4 relative
+          ${sender === 'user'
+            ? 'bg-navy-700 text-white'
+            : isError
+              ? 'bg-red-50 border border-red-200 text-red-800'
+              : 'bg-white border border-slate-200 text-slate-800'
           }
-          shadow-sm hover:shadow-md transition-shadow duration-300
+          ${isSpeaking ? 'ring-2 ring-gold-400' : ''}
         `}
       >
-        <div className="flex items-start">
-          {sender === 'ai' && showAvatar && (
-            <Bot className="h-5 w-5 mr-2 mt-1 text-gold-600 flex-shrink-0" />
+        <div className="flex items-start gap-2">
+          {sender === 'ai' && !isError && (
+            <Bot className="h-5 w-5 mt-0.5 text-gold-600 flex-shrink-0" />
           )}
           
           <div className="flex-1">
-            <div className="whitespace-pre-wrap">
-              {isTyping ? (
-                <TypewriterText key={text} text={text} />
-
-              ) : (
-                text
-              )}
-            </div>
-            
-            {sender === 'ai' && isSpeaking && (
-              <div className="mt-2">
-                <SpeakingIndicator isSpeaking={true} size="sm" />
+            {isTyping ? (
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 rounded-full bg-navy-400 animate-bounce" />
+                <div className="w-2 h-2 rounded-full bg-navy-400 animate-bounce delay-100" />
+                <div className="w-2 h-2 rounded-full bg-navy-400 animate-bounce delay-200" />
               </div>
+            ) : (
+              <>
+                {formatLegalText(text)}
+                {isSpeaking && (
+                  <div className="absolute -top-2 -right-2 flex space-x-1">
+                    <div className="w-1 h-1 rounded-full bg-gold-400 animate-pulse" />
+                    <div className="w-1 h-1 rounded-full bg-gold-400 animate-pulse delay-100" />
+                    <div className="w-1 h-1 rounded-full bg-gold-400 animate-pulse delay-200" />
+                  </div>
+                )}
+              </>
             )}
           </div>
           
-          {sender === 'user' && showAvatar && (
-            <User className="h-5 w-5 ml-2 mt-1 text-black flex-shrink-0" />
+          {sender === 'user' && (
+            <User className="h-5 w-5 mt-0.5 text-white flex-shrink-0" />
           )}
         </div>
+        
+        {formattedTime && (
+          <div className={`text-xs mt-1 ${sender === 'user' ? 'text-navy-200' : 'text-slate-500'}`}>
+            {formattedTime}
+          </div>
+        )}
       </div>
-    </motion.div>
-  );
-};
-
-interface TypewriterTextProps {
-  text: string;
-  speed?: number;
-}
-
-const TypewriterText: React.FC<TypewriterTextProps> = ({ text, speed = 30 }) => {
-  const [displayedText, setDisplayedText] = React.useState('');
-  const [cursorVisible, setCursorVisible] = React.useState(true);
-
-  React.useEffect(() => {
-    let i = 0;
-    const timer = setInterval(() => {
-      if (i < text.length) {
-        setDisplayedText(text.substring(0, i + 1));
-        i++;
-      } else {
-        clearInterval(timer);
-      }
-    }, speed);
-
-    const cursorTimer = setInterval(() => {
-      setCursorVisible(prev => !prev);
-    }, 500);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(cursorTimer);
-    };
-  }, [text, speed]);
-
-  return (
-    <>
-      {displayedText}
-      {cursorVisible && (
-        <span className="inline-block w-2 h-4 bg-gold-600 ml-1 animate-pulse"></span>
-      )}
-    </>
+    </div>
   );
 };
 

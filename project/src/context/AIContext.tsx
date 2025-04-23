@@ -1,10 +1,13 @@
-import React, { createContext, useContext, useState, ReactNode, useRef, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useRef, useCallback, useEffect } from 'react';
 
 interface Message {
   sender: 'user' | 'ai';
   text: string;
   timestamp: Date;
   id: string;
+  sources?: string[];
+  isError?: boolean;
+  isFallback?: boolean;
 }
 
 interface AIContextType {
@@ -19,6 +22,8 @@ interface AIContextType {
   stopListening: () => void;
   toggleVoiceOutput: () => void;
   isVoiceOutputEnabled: boolean;
+  activeLegalTopic: string | null;
+  setActiveLegalTopic: (topic: string | null) => void;
 }
 
 const AIContext = createContext<AIContextType | undefined>(undefined);
@@ -38,142 +43,206 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isVoiceOutputEnabled, setIsVoiceOutputEnabled] = useState(true);
-  
-  // Ref to store the speech synthesis instance
+  const [activeLegalTopic, setActiveLegalTopic] = useState<string | null>(null);
+
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Initialize the speech synthesis on mount
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       speechSynthesisRef.current = window.speechSynthesis;
     }
-    
+
     return () => {
-      // Cancel any ongoing speech synthesis when unmounting
+      if (speechSynthesisRef.current) {
+        speechSynthesisRef.current.cancel();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      speechSynthesisRef.current = window.speechSynthesis;
+    }
+
+    return () => {
       if (speechSynthesisRef.current && speechUtteranceRef.current) {
         speechSynthesisRef.current.cancel();
       }
     };
   }, []);
 
-  // Generate a unique ID for messages
-  const generateId = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  };
+  const generateId = () => crypto.randomUUID();
 
-  // Speech synthesis function
   const speakText = useCallback((text: string) => {
     if (!isVoiceOutputEnabled || !speechSynthesisRef.current) return;
-    
-    // Cancel any ongoing speech
+
     speechSynthesisRef.current.cancel();
-    
-    // Create a new SpeechSynthesisUtterance instance
+
     const utterance = new SpeechSynthesisUtterance(text);
     speechUtteranceRef.current = utterance;
-    
-    // Set properties
-    utterance.rate = 1.0;
+
+    utterance.rate = 0.9;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-    
-    // Set a voice that sounds more natural (if available)
+
     const voices = speechSynthesisRef.current.getVoices();
-    const preferredVoice = voices.find(voice => 
-      voice.name.includes('Daniel') || 
-      voice.name.includes('Samantha') || 
-      voice.name.includes('Google')
+    const preferredVoice = voices.find(voice =>
+      voice.lang.includes('en-IN') ||
+      voice.name.includes('Google UK English Male') ||
+      voice.name.includes('Samantha')
     );
-    
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
-    }
-    
-    // Event handlers
+
+    if (preferredVoice) utterance.voice = preferredVoice;
+
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => {
       setIsSpeaking(false);
-      setError('Speech synthesis failed. Please try again.');
+      setError('Voice output failed. Please try again.');
     };
-    
-    // Start speaking
+
     speechSynthesisRef.current.speak(utterance);
   }, [isVoiceOutputEnabled]);
 
-  // Start listening function
   const startListening = () => {
-    setIsListening(true);
-    // In a real app, this would start the speech recognition
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-IN';
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          setError(null);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognition.onerror = (event) => {
+          setIsListening(false);
+
+          switch (event.error) {
+            case 'network':
+              setError('Network connection required for speech recognition');
+              break;
+            case 'not-allowed':
+              setError('Please allow microphone access in your browser settings');
+              break;
+            case 'audio-capture':
+              setError('No microphone detected or microphone is busy');
+              break;
+            case 'no-speech':
+              setError('No speech was detected');
+              break;
+            default:
+              setError('Speech recognition failed. Please try again.');
+          }
+
+          console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript.trim()) {
+            sendMessage(transcript, true);
+          }
+        };
+
+        try {
+          recognition.start();
+        } catch (err) {
+          setIsListening(false);
+          setError('Failed to start speech recognition');
+          console.error('Recognition start error:', err);
+        }
+      } else {
+        setError('Speech recognition not supported in your browser');
+      }
+    } else {
+      setError('Window object not available');
+    }
   };
 
-  // Stop listening function
-  const stopListening = () => {
-    setIsListening(false);
-    // In a real app, this would stop the speech recognition
-  };
+  const stopListening = () => setIsListening(false);
 
-  // Toggle voice output
   const toggleVoiceOutput = () => {
     setIsVoiceOutputEnabled(prev => !prev);
-    
-    // Stop speaking if we're turning voice off
     if (isVoiceOutputEnabled && speechSynthesisRef.current) {
       speechSynthesisRef.current.cancel();
       setIsSpeaking(false);
     }
   };
 
-  // This is a mock implementation - in a real application, this would connect to a backend
   const sendMessage = async (userInput: string, isVoice: boolean = false) => {
     const userMessage: Message = {
       sender: 'user',
       text: userInput,
       timestamp: new Date(),
-      id: generateId()
+      id: generateId(),
     };
-  
+
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
     setError(null);
-  
+
     try {
-      const response = await fetch("http://localhost:8000/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: userInput })
+      const response = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: userInput,
+          // Don't send history if you don't want persistence
+          history: [] 
+        }),
       });
-  
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-  
+      
       const aiMessage: Message = {
         sender: 'ai',
         text: data.response,
         timestamp: new Date(),
-        id: generateId()
+        id: generateId(),
       };
-  
+
       setMessages(prev => [...prev, aiMessage]);
+
       if (isVoiceOutputEnabled || isVoice) {
         speakText(data.response);
       }
-  
+
     } catch (err) {
-      console.error("Error sending message:", err);
-      setError("Sorry, there was an issue. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : 'Service unavailable';
+      
+      const aiMessage: Message = {
+        sender: 'ai',
+        text: "I'm having trouble connecting to legal resources.",
+        timestamp: new Date(),
+        id: generateId(),
+        isError: true
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+      setError(errorMessage);
     } finally {
       setIsProcessing(false);
     }
   };
-  
-  
 
   const clearMessages = () => {
     setMessages([]);
     setError(null);
-    
-    // Stop any ongoing speech
     if (speechSynthesisRef.current) {
       speechSynthesisRef.current.cancel();
       setIsSpeaking(false);
@@ -181,18 +250,20 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AIContext.Provider value={{ 
-      messages, 
-      isProcessing, 
+    <AIContext.Provider value={{
+      messages,
+      isProcessing,
       isListening,
       isSpeaking,
-      error, 
-      sendMessage, 
+      error,
+      sendMessage,
       clearMessages,
       startListening,
       stopListening,
       toggleVoiceOutput,
-      isVoiceOutputEnabled
+      isVoiceOutputEnabled,
+      activeLegalTopic,
+      setActiveLegalTopic
     }}>
       {children}
     </AIContext.Provider>
