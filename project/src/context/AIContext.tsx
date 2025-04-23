@@ -196,49 +196,49 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch('http://localhost:5000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: userInput,
-          // Don't send history if you don't want persistence
-          history: [] 
-        }),
+        body: JSON.stringify({ text: userInput })  // Simplified payload
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'API request failed');
       }
-
       const data = await response.json();
-      
-      const aiMessage: Message = {
-        sender: 'ai',
-        text: data.response,
-        timestamp: new Date(),
-        id: generateId(),
-      };
+    
+    const aiMessage: Message = {
+      sender: 'ai',
+      text: data.response,
+      timestamp: new Date(),
+      id: generateId(),
+      isFallback: data.is_fallback || false
+    };
 
-      setMessages(prev => [...prev, aiMessage]);
-
-      if (isVoiceOutputEnabled || isVoice) {
-        speakText(data.response);
-      }
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Service unavailable';
-      
-      const aiMessage: Message = {
-        sender: 'ai',
-        text: "I'm having trouble connecting to legal resources.",
-        timestamp: new Date(),
-        id: generateId(),
-        isError: true
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-      setError(errorMessage);
-    } finally {
-      setIsProcessing(false);
+    setMessages(prev => [...prev, aiMessage]);
+    
+    if (isVoiceOutputEnabled || isVoice) {
+      speakText(data.response);
     }
-  };
+  }  catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Service unavailable';
+    
+    const aiMessage: Message = {
+      sender: 'ai',
+      text: "I'm having technical difficulties. For legal advice in India:\n\n" +
+            "• National Legal Services Authority: https://nalsa.gov.in\n" +
+            "• Consult a licensed attorney",
+      timestamp: new Date(),
+      id: generateId(),
+      isError: true,
+      isFallback: true
+    };
+
+    setMessages(prev => [...prev, aiMessage]);
+    setError(errorMessage);
+    console.error('API Error:', err);
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   const clearMessages = () => {
     setMessages([]);
