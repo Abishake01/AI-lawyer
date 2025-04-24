@@ -68,7 +68,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         className={`
           max-w-[85%] rounded-lg p-4 relative
           ${sender === 'user'
-            ? 'bg-navy-700 text-white'
+            ? 'bg-navy-700 text-black'
             : isError
               ? 'bg-red-50 border border-red-200 text-red-800'
               : 'bg-white border border-slate-200 text-slate-800'
@@ -103,7 +103,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>
           
           {sender === 'user' && (
-            <User className="h-5 w-5 mt-0.5 text-white flex-shrink-0" />
+            <User className="h-5 w-5 mt-0.5 text-black flex-shrink-0" />
           )}
         </div>
         

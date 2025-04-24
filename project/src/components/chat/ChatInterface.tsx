@@ -72,7 +72,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
+    <div className="flex flex-col h-[calc(100vh-8rem)] bg-black rounded-lg shadow-lg overflow-hidden border border-slate-200">
       {/* Header with topic indicator */}
       <div className="bg-navy-800 text-white p-4 flex justify-between items-center">
         <div className="flex items-center">
@@ -105,7 +105,7 @@ const ChatInterface = () => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-grow overflow-y-auto p-4 bg-slate-50">
+      <div className="flex-grow overflow-y-auto p-4 bg-slate-100">
         {messages.length === 0 && showSuggestions ? (
           <div className="text-center py-8">
             <Bot className="mx-auto h-12 w-12 text-navy-700 mb-4" />
@@ -184,7 +184,7 @@ const ChatInterface = () => {
       </div>
 
       {/* Input Area with topic indicator */}
-      <div className="border-t border-slate-200 p-4 bg-white">
+      <div className="border-t border-slate-200 p-4 bg-black">
         {activeLegalTopic && (
           <div className="flex items-center gap-2 mb-2 text-sm text-navy-700">
             <BookOpen size={16} />

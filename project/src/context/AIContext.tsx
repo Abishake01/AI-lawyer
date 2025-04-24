@@ -48,7 +48,6 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       speechSynthesisRef.current = window.speechSynthesis;
@@ -61,21 +60,21 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      speechSynthesisRef.current = window.speechSynthesis;
-    }
-
-    return () => {
-      if (speechSynthesisRef.current && speechUtteranceRef.current) {
-        speechSynthesisRef.current.cancel();
-      }
-    };
-  }, []);
-
   const generateId = () => crypto.randomUUID();
 
-  const speakText = useCallback((text: string) => {
+  const detectLanguage = (text: string): 'ta-IN' | 'te-IN' | 'hi-IN' | 'kn-IN' | 'en-IN' => {
+    if (/[\u0B80-\u0BFF]/.test(text)) return 'ta-IN'; // Tamil
+    if (/[\u0C00-\u0C7F]/.test(text)) return 'te-IN'; // Telugu
+    if (/[\u0900-\u097F]/.test(text)) return 'hi-IN'; // Hindi
+    if (/[\u0C80-\u0CFF]/.test(text)) return 'kn-IN'; // Kannada
+    return 'en-IN'; // Default to English
+  };
+
+  const getPreferredVoice = (lang: string, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+    return voices.find(voice => voice.lang === lang) || voices.find(voice => voice.lang.includes(lang.slice(0, 2))) || null;
+  };
+
+  const speakText = useCallback((text: string, userInput: string = '') => {
     if (!isVoiceOutputEnabled || !speechSynthesisRef.current) return;
 
     speechSynthesisRef.current.cancel();
@@ -83,18 +82,18 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
     const utterance = new SpeechSynthesisUtterance(text);
     speechUtteranceRef.current = utterance;
 
-    utterance.rate = 0.9;
+    utterance.rate = 0.95;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
     const voices = speechSynthesisRef.current.getVoices();
-    const preferredVoice = voices.find(voice =>
-      voice.lang.includes('en-IN') ||
-      voice.name.includes('Google UK English Male') ||
-      voice.name.includes('Samantha')
-    );
+    const lang = detectLanguage(userInput || text);
+    const preferredVoice = getPreferredVoice(lang, voices);
 
-    if (preferredVoice) utterance.voice = preferredVoice;
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+      utterance.lang = preferredVoice.lang;
+    }
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
@@ -187,24 +186,24 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
       timestamp: new Date(),
       id: generateId(),
     };
-  
+
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
     setError(null);
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: userInput }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-      
+
       const aiMessage: Message = {
         sender: 'ai',
         text: data.response,
@@ -212,18 +211,16 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
         id: generateId(),
         isFallback: data.is_fallback || false
       };
-  
+
       setMessages(prev => [...prev, aiMessage]);
-      
+
       if (isVoiceOutputEnabled || isVoice) {
-        speakText(data.response);
+        speakText(data.response, userInput);
       }
     } catch (err) {
       const aiMessage: Message = {
         sender: 'ai',
-        text: "Service temporarily unavailable. For legal advice in India:\n\n" +
-              "• Visit https://nalsa.gov.in\n" +
-              "• Contact a local attorney",
+        text: "Service temporarily unavailable. For legal advice in India:\n\n• Visit https://nalsa.gov.in\n• Contact a local attorney",
         timestamp: new Date(),
         id: generateId(),
         isError: true,
