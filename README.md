@@ -1,6 +1,7 @@
 # AI Legal Assistant (India)
 
-![AI Lawyer Demo](demo-screenshot.png) *Screenshot placeholder*
+![AI Lawyer Demo](project/Screenshot%202025-04-24%20215844.png) *Screenshot placeholder*
+![AI Lawyer Demo](project/Screenshot%202025-04-24%20215859.png) *Screenshot placeholder*
 
 An AI-powered legal assistant specializing in Indian law, built with:
 - **Backend**: Python Flask with Groq API
