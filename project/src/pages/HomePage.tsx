@@ -23,13 +23,13 @@ const HomePage = () => {
                   to="/chat"
                   className="bg-crimson-700 hover:bg-crimson-800 text-black px-6 py-3 rounded-md font-medium transition-colors duration-200 text-center"
                 >
-                  Ask AI Lawyer Now
+                 | Ask AI Lawyer Now |
                 </Link>
                 <Link
                   to="/about"
                   className="bg-transparent hover:bg-white/10 text-black border border-white/30 px-6 py-3 rounded-md font-medium transition-colors duration-200 text-center"
                 >
-                  Learn More
+                 | Learn More |
                 </Link>
               </div>
             </div>

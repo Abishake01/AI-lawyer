@@ -19,6 +19,7 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+      
 
       {/* Mission Section */}
       <section className="py-16 md:py-24">
@@ -48,9 +49,9 @@ const AboutPage = () => {
               <div className="pt-4">
                 <Link 
                   to="/chat" 
-                  className="inline-block bg-navy-800 hover:bg-navy-900 text-gray-600 px-6 py-3 rounded-md font-medium transition-colors duration-200"
+                  className="inline-block bg-navy-800 hover:bg-navy-900 text-gray-900 px-6 py-3 rounded-md font-medium transition-colors duration-200"
                 >
-                  Experience AI Lawyer
+                 | Experience AI Lawyer |
                 </Link>
               </div>
             </div>
@@ -161,7 +162,7 @@ const AboutPage = () => {
               to="/chat"
               className="inline-block bg-crimson-700 hover:bg-crimson-800 text-balck px-8 py-4 rounded-md font-medium transition-colors duration-200 text-lg"
             >
-              Try AI Lawyer Now
+              | Try AI Lawyer Now |
             </Link>
           </div>
         </div>
