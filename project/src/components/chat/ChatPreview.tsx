@@ -10,19 +10,19 @@ const ChatPreview = () => {
   const conversation = [
     {
       type: 'user',
-      message: "I was pulled over by police. Do I have to answer all their questions?"
+      message: " I was pulled over by police. Do I have to answer all their questions?"
     },
     {
       type: 'ai',
-      message: "You have the right to remain silent. You only need to provide your license, registration, and insurance when asked. For any other questions, you can politely state that you prefer not to answer without a lawyer present."
+      message: " You have the right to remain silent. You only need to provide your license, registration, and insurance when asked. For any other questions, you can politely state that you prefer not to answer without a lawyer present."
     },
     {
       type: 'user',
-      message: "Can the police search my car without my permission?"
+      message: " Can the police search my car without my permission?"
     },
     {
       type: 'ai',
-      message: "Police need either your consent, a valid search warrant, or 'probable cause' to search your vehicle. You can clearly state: 'I do not consent to a search.' If they search anyway, don't resist physically, but note your objection."
+      message: " Police need either your consent, a valid search warrant, or 'probable cause' to search your vehicle. You can clearly state: 'I do not consent to a search.' If they search anyway, don't resist physically, but note your objection."
     }
   ];
 

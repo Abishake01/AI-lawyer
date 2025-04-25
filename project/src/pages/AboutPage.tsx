@@ -159,7 +159,7 @@ const AboutPage = () => {
             </p>
             <Link
               to="/chat"
-              className="inline-block bg-crimson-700 hover:bg-crimson-800 text-white px-8 py-4 rounded-md font-medium transition-colors duration-200 text-lg"
+              className="inline-block bg-crimson-700 hover:bg-crimson-800 text-balck px-8 py-4 rounded-md font-medium transition-colors duration-200 text-lg"
             >
               Try AI Lawyer Now
             </Link>
