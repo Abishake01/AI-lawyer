@@ -140,9 +140,10 @@ def get_fallback_response(question=None):
         "• State Legal Services Authority",
         "• Consult a licensed attorney"
     ]
+    resources_text = '\n'.join(resources)
     if question:
-        return f"{base}Regarding '{question}', please contact:\n" + '\n'.join(resources)
-    return f"{base}Please contact:\n{'\n'.join(resources)}"
+        return f"{base}Regarding '{question}', please contact:\n{resources_text}"
+    return f"{base}Please contact:\n{resources_text}"
 
 
 def _build_cors_preflight_response():
