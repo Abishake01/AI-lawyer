@@ -35,7 +35,7 @@ const Header = () => {
             className="flex items-center space-x-2 text-navy-800"
           >
             <Scale className="h-8 w-8 text-gold-600" />
-            <span className="text-xl font-serif font-bold">AI Lawyer</span>
+            <span className="text-xl font-serif font-bold">AI Advocate</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -46,7 +46,7 @@ const Header = () => {
               className="flex items-center space-x-2 bg-navy-800 text-black px-4 py-2 rounded-md hover:bg-navy-900 transition-colors duration-200"
             >
               <MicIcon className="h-5 w-5" />
-              <span>Ask AI Lawyer</span>
+              <span>Ask AI Advocate</span>
             </Link>
           </nav>
 
@@ -75,7 +75,7 @@ const Header = () => {
               className="flex items-center justify-center space-x-2 bg-navy-800 text-black px-4 py-3 rounded-md hover:bg-navy-900 transition-colors duration-200"
             >
               <MicIcon className="h-5 w-5" />
-              <span>Ask AI Lawyer</span>
+              <span>Ask AI Advocate</span>
             </Link>
           </div>
         </div>

@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Scale className="h-6 w-6 text-gold-400" />
-              <span className="text-xl font-serif font-bold">AI Lawyer</span>
+              <span className="text-xl font-serif font-bold">AI Advocate</span>
             </div>
             <p className="text-gray-600 text-sm max-w-xs">
               Your personal legal assistant, providing guidance and information about laws and regulations when you need it most.
@@ -37,7 +37,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/chat" className="text-gray-600 hover:text-black transition-colors duration-200">
-                  Ask AI Lawyer
+                  Ask AI Advocate
                 </Link>
               </li>
             </ul>
@@ -66,7 +66,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start space-x-3">
                 <Mail className="h-5 w-5 text-gold-400 mt-0.5" />
-                <span className="text-gray-600">support@ailawyer.com</span>
+                <span className="text-gray-600">support@aiAdvocate.com</span>
               </li>
               <li className="flex items-start space-x-3">
                 <Phone className="h-5 w-5 text-gold-400 mt-0.5" />
@@ -74,16 +74,16 @@ const Footer = () => {
               </li>
               <li className="flex items-start space-x-3">
                 <Globe className="h-5 w-5 text-gold-400 mt-0.5" />
-                <span className="text-gray-600">www.ailawyer.com</span>
+                <span className="text-gray-600">www.aiAdvocate.com</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-navy-700 text-center text-gray-600 text-sm">
-          <p>&copy; {new Date().getFullYear()} AI Lawyer. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} AI Advocate. All rights reserved.</p>
           <p className="mt-2">
-            Disclaimer: AI Lawyer provides legal information, not legal advice.
+            Disclaimer: AI Advocate provides legal information, not legal advice.
             Always consult with a qualified attorney for legal advice.
           </p>
         </div>

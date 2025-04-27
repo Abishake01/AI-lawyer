@@ -16,14 +16,14 @@ const HomePage = () => {
               </h1>
               <p className="text-lg md:text-xl text-slate-600 max-w-lg ">
                 Get instant legal information and guidance when you need it most. 
-                AI Lawyer helps you understand your rights and navigate legal situations confidently.
+                AI Advocate helps you understand your rights and navigate legal situations confidently.
               </p>
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 pt-4">
                 <Link
                   to="/chat"
                   className="bg-crimson-700 hover:bg-crimson-800 text-black px-6 py-3 rounded-md font-medium transition-colors duration-200 text-center"
                 >
-                 | Ask AI Lawyer Now |
+                 | Ask AI Advocate Now |
                 </Link>
                 <Link
                   to="/about"
@@ -46,7 +46,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy-900 mb-4">
-              How AI Lawyer Helps You
+              How AI Advocate Helps You
             </h2>
             <p className="text-lg text-slate-600">
               Our AI-powered legal assistant provides accurate information about laws and your rights,
@@ -87,7 +87,7 @@ const HomePage = () => {
               Real-World Applications
             </h2>
             <p className="text-lg text-slate-600">
-              Discover how AI Lawyer can help you in various scenarios, from everyday legal questions
+              Discover how AI Advocate can help you in various scenarios, from everyday legal questions
               to critical situations.
             </p>
           </div>
@@ -112,14 +112,14 @@ const HomePage = () => {
             Ready to Get Legal Assistance?
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Start using AI Lawyer today and gain confidence in your legal knowledge. 
+            Start using AI Advocate today and gain confidence in your legal knowledge. 
             Ask your first question and experience the power of AI-powered legal assistance.
           </p>
           <Link
             to="/chat"
             className="inline-flex items-center space-x-2 bg-crimson-700 hover:bg-crimson-800 text-black px-6 py-3 rounded-md font-medium transition-colors duration-200"
           >
-            <span>Try AI Lawyer Now</span>
+            <span>Try AI Advocate Now</span>
             <ArrowRight className="h-5 w-5" />
           </Link>
         </div>

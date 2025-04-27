@@ -113,7 +113,8 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'en-IN';
+        recognition.lang = 'en-IN','ta-IN','te-IN','hi-IN','kn-IN';
+        recognition.maxAlternatives = 1;
 
         recognition.onstart = () => {
           setIsListening(true);

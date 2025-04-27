@@ -10,7 +10,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-4 md:px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h1 className="font-serif text-4xl md:text-5xl font-bold mb-6">
-              About AI Lawyer
+              About AI Advocate
             </h1>
             <p className="text-lg md:text-xl text-gray-600 mb-6">
               We're revolutionizing legal assistance through advanced AI technology, 
@@ -37,7 +37,7 @@ const AboutPage = () => {
                 Our Mission
               </h2>
               <p className="text-lg text-slate-700">
-                At AI Lawyer, we believe that understanding your legal rights should be accessible to everyone. 
+                At AI Advocate, we believe that understanding your legal rights should be accessible to everyone. 
                 Our mission is to democratize legal information through technology, helping people navigate 
                 complex legal situations with confidence.
               </p>
@@ -51,7 +51,7 @@ const AboutPage = () => {
                   to="/chat" 
                   className="inline-block bg-navy-800 hover:bg-navy-900 text-gray-900 px-6 py-3 rounded-md font-medium transition-colors duration-200"
                 >
-                 | Experience AI Lawyer |
+                 | Experience AI Advocate |
                 </Link>
               </div>
             </div>
@@ -64,7 +64,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-navy-900 mb-4">
-              How AI Lawyer Works
+              How AI Advocate Works
             </h2>
             <p className="text-lg text-slate-600">
               Our advanced AI technology leverages natural language processing and a comprehensive 
@@ -117,7 +117,7 @@ const AboutPage = () => {
               Key Features
             </h2>
             <p className="text-lg text-slate-600">
-              AI Lawyer combines cutting-edge technology with comprehensive legal knowledge
+              AI Advocate combines cutting-edge technology with comprehensive legal knowledge
               to provide an exceptional user experience.
             </p>
           </div>
@@ -136,7 +136,7 @@ const AboutPage = () => {
             <FeatureCard
               icon={<MessageSquare className="h-6 w-6 text-crimson-700" />}
               title="Natural Conversation"
-              description="Interact with AI Lawyer through natural language, just as you would speak to a human legal expert."
+              description="Interact with AI Advocate through natural language, just as you would speak to a human legal expert."
             />
             <FeatureCard
               icon={<Lock className="h-6 w-6 text-crimson-700" />}
@@ -152,17 +152,17 @@ const AboutPage = () => {
         <div className="container mx-auto px-4 md:px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-6">
-              Ready to Experience AI Lawyer?
+              Ready to Experience AI Advocate?
             </h2>
             <p className="text-lg text-gray-600 mb-8">
               Start using our platform today and gain confidence in navigating legal situations.
-              Ask your first question and see how AI Lawyer can help you.
+              Ask your first question and see how AI Advocate can help you.
             </p>
             <Link
               to="/chat"
               className="inline-block bg-crimson-700 hover:bg-crimson-800 text-balck px-8 py-4 rounded-md font-medium transition-colors duration-200 text-lg"
             >
-              | Try AI Lawyer Now |
+              | Try AI Advocate Now |
             </Link>
           </div>
         </div>

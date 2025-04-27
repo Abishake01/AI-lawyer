@@ -10,7 +10,7 @@ const ChatPage = () => {
         <div className="mt-4 text-sm text-slate-600 text-center">
           <p className="flex items-center justify-center">
             <Info className="h-4 w-4 mr-1" />
-            AI Lawyer provides legal information, not legal advice. 
+            AI Advocate provides legal information, not legal advice. 
             Always consult with a qualified attorney for specific legal situations.
           </p>
         </div>
