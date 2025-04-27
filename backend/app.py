@@ -141,7 +141,7 @@ def get_fallback_response(question=None):
         "• Consult a licensed attorney"
     ]
     if question:
-        return f"{base}Regarding '{question}', please contact:\n{'\n'.join(resources)}"
+        return f"{base}Regarding '{question}', please contact:\n" + '\n'.join(resources)
     return f"{base}Please contact:\n{'\n'.join(resources)}"
 
 
