@@ -7,4 +7,5 @@ werkzeug==3.0.1
 blinker==1.7.0
 loguru==0.7.2
 python-json-logger==2.0.7
-
+requests
+langdetect
