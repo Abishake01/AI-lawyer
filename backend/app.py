@@ -6,7 +6,7 @@ import os
 import logging
 from datetime import datetime
 import requests
-from langdetect import detect  # Language detection module
+from langdetect import detect  
 
 load_dotenv()
 app = Flask(__name__)
@@ -33,11 +33,18 @@ Rules:
 5. Clarify if the information is **state-specific**, and suggest consulting a lawyer for personalized advice.
 6. Always cite relevant laws (IPC, CrPC, etc.) briefly when needed, without explanation unless asked.
 7. Never give personal legal advice — recommend contacting a lawyer or legal services.
-8. you can analyze the user language and respond in the same language.
+8. You can analyze the user language and respond in the same language.
 9. If the user inputs in Tanglish (Tamil written in English), detect it and respond in Tamil.
+10. If a user asks how to commit a crime (e.g., how to kill someone, how to steal), **do not reject the question**, but respond strictly:
+   - Clearly state the **legal consequences** under Indian law.
+   - Mention relevant sections of IPC (e.g., 302 for murder).
+   - Warn that **attempting or planning such acts is punishable by law**.
+   - Never justify, support, or explain how the act can be done.
+11. A user is asking about the legal consequences of committing murder and whether it's possible to avoid punishment. Provide a legal response based on Indian law, citing relevant sections like IPC 302, CrPC, etc.
 
 Be accurate, concise, and helpful.
 """
+
 
 # Translation function
 def translate_text(text, target_lang, source_lang='en'):
@@ -99,7 +106,7 @@ def chat():
                 response = client.chat.completions.create(
                     messages=[{"role": "system", "content": LEGAL_CONTEXT},
                               {"role": "user", "content": user_input}],
-                    model="llama3-8b-8192",  # Groq's fast model
+                    model="llama3-8b-8192",   
                     temperature=0.3,
                     max_tokens=1024
                 )

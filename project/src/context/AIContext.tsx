@@ -76,44 +76,66 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
 
   const speakText = useCallback((text: string, userInput: string = '') => {
     if (!isVoiceOutputEnabled || !speechSynthesisRef.current) return;
-
-    speechSynthesisRef.current.cancel();
-
+  
+    let wasCancelledManually = false;
+  
+    // Cancel any previous speech and mark it as manual
+    if (speechSynthesisRef.current.speaking) {
+      wasCancelledManually = true;
+      speechSynthesisRef.current.cancel();
+    }
+  
     const utterance = new SpeechSynthesisUtterance(text);
     speechUtteranceRef.current = utterance;
-
+  
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
-
+  
     const voices = speechSynthesisRef.current.getVoices();
     const lang = detectLanguage(userInput || text);
     const preferredVoice = getPreferredVoice(lang, voices);
-
+  
     if (preferredVoice) {
       utterance.voice = preferredVoice;
       utterance.lang = preferredVoice.lang;
     }
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => {
+  
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      wasCancelledManually = false; // Reset on new speak
+    };
+  
+    utterance.onend = () => {
       setIsSpeaking(false);
+    };
+  
+    utterance.onerror = (event) => {
+      setIsSpeaking(false);
+    
+      // Ignore "interrupted" errors caused by manual cancellation or new speech
+      if (event.error === 'interrupted') {
+        return;
+      }
+    
+      console.error('SpeechSynthesisUtterance error:', event.error);
       setError('Voice output failed. Please try again.');
     };
-
+    
+  
     speechSynthesisRef.current.speak(utterance);
   }, [isVoiceOutputEnabled]);
+   
 
   const startListening = () => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
+      
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'en-IN','ta-IN','te-IN','hi-IN','kn-IN';
+        recognition.lang = 'en-IN';
         recognition.maxAlternatives = 1;
 
         recognition.onstart = () => {
@@ -173,12 +195,19 @@ export const AIProvider = ({ children }: { children: ReactNode }) => {
   const stopListening = () => setIsListening(false);
 
   const toggleVoiceOutput = () => {
-    setIsVoiceOutputEnabled(prev => !prev);
-    if (isVoiceOutputEnabled && speechSynthesisRef.current) {
-      speechSynthesisRef.current.cancel();
-      setIsSpeaking(false);
-    }
+    setIsVoiceOutputEnabled(prev => {
+      const next = !prev;
+  
+      // Only cancel if voice is being turned off
+      if (!next && speechSynthesisRef.current) {
+        speechSynthesisRef.current.cancel();
+        setIsSpeaking(false);
+      }
+  
+      return next;
+    });
   };
+  
 
   const sendMessage = async (userInput: string, isVoice: boolean = false) => {
     const userMessage: Message = {
